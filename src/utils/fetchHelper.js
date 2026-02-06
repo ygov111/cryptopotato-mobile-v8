@@ -5,7 +5,7 @@
  * In APK (production): Must use full URLs with EXPO_PUBLIC_BASE_URL
  */
 
-const BASE_URL = process.env.EXPO_PUBLIC_BASE_URL;
+const BASE_URL = process.env.EXPO_PUBLIC_BASE_URL || "https://cpapp.created.app";
 
 /**
  * Smart fetch that works in both dev and production
