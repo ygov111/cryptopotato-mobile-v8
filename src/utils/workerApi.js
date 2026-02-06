@@ -127,7 +127,7 @@ export async function translateText(text, targetLang, sourceLang = "en") {
       headers: WORKER_HEADERS,
       body: JSON.stringify({
         text,
-        targetLang,
+        target,
         sourceLang,
       }),
     });
@@ -149,7 +149,7 @@ export async function translateText(text, targetLang, sourceLang = "en") {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         text,
-        targetLang,
+        target,
         sourceLang,
       }),
     });
