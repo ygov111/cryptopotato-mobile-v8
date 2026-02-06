@@ -3,15 +3,11 @@
  * Routes all external API calls through Worker with fallback to direct APIs
  */
 
-import { apiFetch } from "./fetchHelper";
-
-// HARDCODED FALLBACKS: These ensure the APK works even if EAS secrets fail to bake.
-const WORKER_BASE_URL = process.env.EXPO_PUBLIC_WORKER_URL || "https://cpapp.cpotato.workers.dev";
-const SHARED_SECRET = process.env.EXPO_PUBLIC_APP_SHARED_SECRET || "8f2b3c9a1e5d4b7f0a6c2e8b4d9f1a0c";
-
+const WORKER_BASE_URL = "https://cpapp.cpotato.workers.dev";
 const WORKER_HEADERS = {
+  "X-App-Shared-Secret": "8f2b3c9a1e5d4b7f0a6c2e8b4d9f1a0c",
+  "User-Agent": "CryptoPotatoMobile/1.0",
   "Content-Type": "application/json",
-  "X-App-Shared-Secret": SHARED_SECRET,
 };
 
 /**
@@ -23,23 +19,30 @@ export async function fetchCryptoPrices(coinIds) {
       method: "POST",
       headers: WORKER_HEADERS,
       body: JSON.stringify({
-        coinIds,
-        vsCurrency: "usd",
-        include24hrChange: true,
+        ids: coinIds,              // Changed from coinIds to ids
+        vs_currency: "usd",        // Changed from vsCurrency to vs_currency
+        include_24hr_change: true, // Changed to underscore style
       }),
     });
 
-    if (!response.ok) throw new Error(`Worker prices API failed: ${response.status}`);
+    if (!response.ok) {
+      throw new Error(`Worker prices API failed: ${response.status}`);
+    }
+
     return await response.json();
   } catch (workerError) {
-    console.warn("⚠️ Worker prices failed, falling back:", workerError.message);
+    console.warn("⚠️ Worker failed, falling back to CoinGecko direct:", workerError.message);
+
     const fallbackResponse = await fetch(
       `https://api.coingecko.com/api/v3/simple/price?ids=${coinIds}&vs_currencies=usd&include_24hr_change=true`,
       {
-        headers: { "x-cg-demo-api-key": process.env.EXPO_PUBLIC_COINGECKO_KEY || "" },
+        headers: {
+          "x-cg-demo-api-key": process.env.EXPO_PUBLIC_COINGECKO_KEY || "",
+        },
       }
     );
-    if (!fallbackResponse.ok) throw new Error("Both Worker and CoinGecko failed");
+
+    if (!fallbackResponse.ok) throw new Error("Both Worker and CoinGecko direct API failed");
     return await fallbackResponse.json();
   }
 }
@@ -48,59 +51,87 @@ export async function fetchCryptoPrices(coinIds) {
  * Fetch market data via Worker with fallback
  */
 export async function fetchMarketData(params = {}) {
-  const { vsCurrency = "usd", order = "market_cap_desc", perPage = 250, page = 1, sparkline = false, priceChangePercentage = "24h" } = params;
+  const {
+    vsCurrency = "usd",
+    order = "market_cap_desc",
+    perPage = 250,
+    page = 1,
+    sparkline = false,
+    priceChangePercentage = "24h",
+  } = params;
+
   try {
     const response = await fetch(`${WORKER_BASE_URL}/api/prices`, {
       method: "POST",
       headers: WORKER_HEADERS,
-      body: JSON.stringify({ endpoint: "markets", vsCurrency, order, perPage, page, sparkline, priceChangePercentage }),
+      body: JSON.stringify({
+        endpoint: "markets",
+        vs_currency: vsCurrency, // Standardizing to underscore
+        order,
+        per_page: perPage,       // Standardizing to underscore
+        page,
+        sparkline,
+        price_change_percentage: priceChangePercentage,
+      }),
     });
+
     if (!response.ok) throw new Error(`Worker market API failed: ${response.status}`);
     return await response.json();
   } catch (workerError) {
-    console.warn("⚠️ Worker market failed, falling back:", workerError.message);
+    console.warn("⚠️ Worker failed, falling back to CoinGecko direct:", workerError.message);
+
     const fallbackResponse = await fetch(
       `https://api.coingecko.com/api/v3/coins/markets?vs_currency=${vsCurrency}&order=${order}&per_page=${perPage}&page=${page}&sparkline=${sparkline}&price_change_percentage=${priceChangePercentage}`,
       {
-        headers: { "x-cg-demo-api-key": process.env.EXPO_PUBLIC_COINGECKO_KEY || "" },
+        headers: {
+          "x-cg-demo-api-key": process.env.EXPO_PUBLIC_COINGECKO_KEY || "",
+        },
       }
     );
-    if (!fallbackResponse.ok) throw new Error("Both Worker and CoinGecko failed");
+
+    if (!fallbackResponse.ok) throw new Error("Both Worker and CoinGecko direct API failed");
     return await fallbackResponse.json();
   }
 }
 
 /**
- * Translate text via Worker with fallback to backend
+ * Translate text via Worker with fallback
  */
 export async function translateText(text, targetLang, sourceLang = "en") {
   try {
     const response = await fetch(`${WORKER_BASE_URL}/api/translate`, {
       method: "POST",
       headers: WORKER_HEADERS,
-      body: JSON.stringify({ text, targetLang, sourceLang }),
+      body: JSON.stringify({
+        text: text,        // Your Worker expects 'text'
+        target: targetLang, // Changed from targetLang to target
+        source: sourceLang, // Changed from sourceLang to source
+      }),
     });
 
     if (!response.ok) throw new Error(`Worker translate API failed: ${response.status}`);
     return await response.json();
   } catch (workerError) {
     console.warn("⚠️ Worker failed, falling back to backend translate:", workerError.message);
-    const fallbackResponse = await apiFetch("/api/translate", {
+
+    const fallbackResponse = await fetch("/api/translate", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ text, targetLang, sourceLang }),
     });
-    if (!fallbackResponse.ok) throw new Error(`Backend translate failed: ${fallbackResponse.status}`);
+
+    if (!fallbackResponse.ok) throw new Error("Both Worker and backend translate API failed");
     return await fallbackResponse.json();
   }
 }
 
 /**
- * Batch translate multiple texts
+ * Batch translate multiple texts via Worker
  */
 export async function batchTranslate(texts, targetLang, sourceLang = "en") {
   try {
-    const result = await translateText(texts.join("\n"), targetLang, sourceLang);
+    const combinedText = texts.join("\n");
+    const result = await translateText(combinedText, targetLang, sourceLang);
     return result.translatedText.split("\n");
   } catch (error) {
     console.error("Batch translation error:", error);
@@ -117,12 +148,17 @@ export async function callGeminiAI(prompt, config = {}) {
     const response = await fetch(`${WORKER_BASE_URL}/api/gemini`, {
       method: "POST",
       headers: WORKER_HEADERS,
-      body: JSON.stringify({ prompt, temperature, maxOutputTokens }),
+      body: JSON.stringify({
+        prompt,
+        temperature,
+        maxOutputTokens,
+      }),
     });
+
     if (!response.ok) throw new Error(`Worker Gemini API failed: ${response.status}`);
     return await response.json();
   } catch (workerError) {
-    console.warn("⚠️ Worker Gemini failed");
+    console.warn("⚠️ Worker failed for Gemini, no fallback available");
     throw new Error("Gemini API unavailable");
   }
 }
