@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { Platform } from "react-native";
 import { WebView } from "react-native-webview";
 import { useAuthStore } from "./store";
+import { apiFetch } from "@/utils/fetchHelper";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const callbackUrl = "/api/auth/token";
@@ -36,20 +37,14 @@ export const AuthWebView = ({ mode, proxyURL, baseURL }) => {
       });
 
       if (points > 0 || portfolio.length > 0) {
-        // CRITICAL: Use baseURL for API calls, not proxyURL
-        // proxyURL is for WebView navigation, baseURL is for fetch requests
-        const apiUrl = `${baseURL}/api/auth/migrate-local-data`;
-
         console.log("📡 Migration starting...");
         console.log("📡 Platform:", Platform.OS);
-        console.log("📡 API URL:", apiUrl);
 
-        const response = await fetch(apiUrl, {
+        const response = await apiFetch("/api/auth/migrate-local-data", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          credentials: "include",
           body: JSON.stringify({ points, portfolio, alerts: [] }),
         });
 
