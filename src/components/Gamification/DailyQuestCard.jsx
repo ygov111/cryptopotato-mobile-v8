@@ -90,14 +90,13 @@ export default function DailyQuestCard({
   };
 
   const handleCardPress = () => {
-    // Navigate to the article instead of opening modal
-    if (quest?.articleUrl) {
-      router.push({
-        pathname: "/(tabs)/webview",
-        params: { url: encodeURIComponent(quest.articleUrl) },
-      });
-    }
-  };
+  if (quest?.articleUrl) {
+    router.push({
+      pathname: "/(tabs)/article",  // ✅ Opens app article
+      params: { url: encodeURIComponent(quest.articleUrl) },
+    });
+  }
+};
 
   const handleTakeQuizPress = (e) => {
     // Stop propagation so it doesn't trigger article navigation
