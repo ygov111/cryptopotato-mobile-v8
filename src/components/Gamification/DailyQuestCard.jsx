@@ -12,6 +12,7 @@ import {
 } from "lucide-react-native";
 import useUser from "@/utils/auth/useUser";
 import { useAuth } from "@/utils/auth/useAuth";
+import { useArticleNavigation } from "@/hooks/useArticleNavigation";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { apiFetch } from "@/utils/fetchHelper";
 
@@ -26,6 +27,7 @@ export default function DailyQuestCard({
   const { data: user } = useUser();
   const { signUp } = useAuth();
   const queryClient = useQueryClient();
+  const { handleLinkPress } = useArticleNavigation();
   const [showModal, setShowModal] = useState(false);
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [result, setResult] = useState(null);
@@ -90,13 +92,11 @@ export default function DailyQuestCard({
   };
 
   const handleCardPress = () => {
-  if (quest?.articleUrl) {
-    router.push({
-      pathname: "/(tabs)/article",  // ✅ Opens app article
-      params: { url: encodeURIComponent(quest.articleUrl) },
-    });
-  }
-};
+    // Use article navigation hook for proper native article rendering
+    if (quest?.articleUrl) {
+      handleLinkPress(quest.articleUrl);
+    }
+  };
 
   const handleTakeQuizPress = (e) => {
     // Stop propagation so it doesn't trigger article navigation
