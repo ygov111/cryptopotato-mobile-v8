@@ -2,6 +2,7 @@ import { router } from "expo-router";
 import { useEffect, useRef, useState } from "react";
 import { Platform } from "react-native";
 import { WebView } from "react-native-webview";
+import { useQueryClient } from "@tanstack/react-query";
 import { useAuthStore } from "./store";
 import { apiFetch } from "@/utils/fetchHelper";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -19,6 +20,7 @@ export const AuthWebView = ({ mode, proxyURL, baseURL }) => {
   const { auth, setAuth, isReady } = useAuthStore();
   const isAuthenticated = isReady ? !!auth : null;
   const iframeRef = useRef(null);
+  const queryClient = useQueryClient();
 
   const migrateLocalDataToServer = async () => {
     try {
@@ -67,6 +69,12 @@ export const AuthWebView = ({ mode, proxyURL, baseURL }) => {
           AsyncStorage.removeItem("portfolio"),
         ]);
         console.log("🗑️ Local data cleared after migration");
+
+        // CRITICAL: Invalidate queries to force refetch from server
+        queryClient.invalidateQueries({ queryKey: ["portfolio"] });
+        queryClient.invalidateQueries({ queryKey: ["points"] });
+        queryClient.invalidateQueries({ queryKey: ["userPoints"] });
+        console.log("♻️ Queries invalidated - portfolio will refetch from server");
       } else {
         console.log("ℹ️ No local data to migrate");
       }
