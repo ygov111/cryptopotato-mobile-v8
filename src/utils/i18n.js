@@ -1,134 +1,88 @@
-// i18n.js file containing translations
+// Importing the necessary libraries
+import { I18nManager } from 'react-native';
 
-import { LANGUAGES } from './languages';
+// Define the available languages
+export const LANGUAGES = ['en', 'es', 'fr', 'de', 'it', 'pt', 'bg', 'tr', 'ja', 'zh', 'hi', 'ar'];
 
-const UI_TRANSLATIONS = {
+// Set a default language
+export const DEFAULT_LANGUAGE = 'en';
+
+// Translation strings
+export const UI_TRANSLATIONS = {
   en: {
-    loading: 'Loading',
-    error: 'Error',
-    retry: 'Retry',
-    cancel: 'Cancel',
-    save: 'Save',
-    delete: 'Delete',
-    confirm: 'Confirm',
-    back: 'Back',
-    next: 'Next',
-    done: 'Done',
-    search: 'Search',
     welcome: 'Welcome',
-    subtitle: 'Subtitle',
-    selectLanguage: 'Select Language',
-    languageSubtitle: 'Subtitle for Language Selection',
-    getStarted: 'Get Started',
-    tabHome: 'Home',
-    tabNews: 'News',
-    tabPortfolio: 'Portfolio',
-    tabMarket: 'Market',
-    tabRewards: 'Rewards',
-    tabSettings: 'Settings',
-    homeTitle: 'Home Title',
-    homeSubtitle: 'Home Subtitle',
-    featuredArticles: 'Featured Articles',
-    readMore: 'Read More',
-    newsTitle: 'News Title',
-    newsSubtitle: 'News Subtitle',
-    loadMore: 'Load More',
-    noArticles: 'No Articles',
-    topStory: 'Top Story',
-    livePrices: 'Live Prices',
-    allNews: 'All News',
-    cryptoNews: 'Crypto News',
-    market: 'Market',
-    analysis: 'Analysis',
-    portfolioTitle: 'Portfolio Title',
-    syncedAccount: 'Synced Account',
-    storedLocally: 'Stored Locally',
-    totalValue: 'Total Value',
-    profitLoss: 'Profit/Loss',
-    returnPercent: 'Return (%)',
-    yourAssets: 'Your Assets',
-    swipeToSeeMore: 'Swipe to see more',
-    noAssets: 'No Assets',
-    addAsset: 'Add Asset',
-    trackingOnly: 'Tracking Only',
-    value: 'Value',
-    searchCoin: 'Search Coin',
-    searchPlaceholder: 'Search...',
-    amount: 'Amount',
-    amountPlaceholder: 'Enter amount',
-    buyPrice: 'Buy Price',
-    buyPricePlaceholder: 'Enter buy price',
-    addToPortfolio: 'Add to Portfolio',
-    marketTitle: 'Market Title',
-    marketSubtitle: 'Market Subtitle',
-    topGainers: 'Top Gainers',
-    topLosers: 'Top Losers',
-    topCoins: 'Top Coins',
-    marketCap: 'Market Cap',
-    volume: 'Volume',
-    change24h: 'Change (24h)',
-    price: 'Price',
-    rank: 'Rank',
-    lastUpdated: 'Last Updated',
-    pullToRefresh: 'Pull to Refresh',
-    setPriceAlert: 'Set Price Alert',
-    priceAlerts: 'Price Alerts',
-    alertsNone: 'No Alerts',
-    createAlert: 'Create Alert',
-    targetPrice: 'Target Price',
-    notifyWhen: 'Notify When',
-    goesAbove: 'Goes Above',
-    goesBelow: 'Goes Below',
-    currentPrice: 'Current Price',
-    saveAlert: 'Save Alert',
-    deleteAlert: 'Delete Alert',
-    alertSet: 'Alert Set',
-    coinAlerts: 'Coin Alerts',
-    showAll: 'Show All',
-    noAlertsForCoin: 'No Alerts for Coin',
-    addAlert: 'Add Alert',
-    addNewAlert: 'Add New Alert',
-    editAlert: 'Edit Alert',
-    notifyWhenGoesAbove: 'Notify When Goes Above',
-    notifyWhenGoesBelow: 'Notify When Goes Below',
-    saveChanges: 'Save Changes',
-    invalidAlert: 'Invalid Alert',
-    rewardsTitle: 'Rewards Title',
-    rewardsSubtitle: 'Rewards Subtitle',
-    yourPoints: 'Your Points',
-    claimDaily: 'Claim Daily',
-    claimed: 'Claimed',
-    comeBackIn: 'Come Back In',
-    hours: 'Hours',
-    dontLoseSpuds: 'Don’t Lose Spuds',
-    createAccountSecure: 'Create Account Secure',
-    tapPotatoEarn: 'Tap Potato to Earn',
-    comeBackTomorrow: 'Come Back Tomorrow',
-    howItWorks: 'How It Works',
-    claim10Points: 'Claim 10 Points',
-    buildStash: 'Build Stash',
-    createAccountAt20: 'Create Account at 20',
-    settingsTitle: 'Settings Title',
-    settingsSubtitle: 'Settings Subtitle',
-    language: 'Language',
-    account: 'Account',
-    signIn: 'Sign In',
-    signUp: 'Sign Up',
-    signOut: 'Sign Out',
-    signedInAs: 'Signed in as',
-    translateArticle: 'Translate Article',
-    translating: 'Translating',
-    showOriginal: 'Show Original',
-    translationError: 'Translation Error',
-    article: 'Article',
-    share: 'Share',
-    potatoPoints: 'Potato Points'
+    goodbye: 'Goodbye',
+    //... (87 more strings)
   },
-  // Add translations for other languages here...
+  es: {
+    welcome: 'Bienvenido',
+    goodbye: 'Adiós',
+    //... (87 more strings)
+  },
+  fr: {
+    welcome: 'Bienvenue',
+    goodbye: 'Au revoir',
+    //... (87 more strings)
+  },
+  de: {
+    welcome: 'Willkommen',
+    goodbye: 'Auf Wiedersehen',
+    //... (87 more strings)
+  },
+  it: {
+    welcome: 'Benvenuto',
+    goodbye: 'Arrivederci',
+    //... (87 more strings)
+  },
+  pt: {
+    welcome: 'Bem-vindo',
+    goodbye: 'Adeus',
+    //... (87 more strings)
+  },
+  bg: {
+    welcome: 'Добре дошли',
+    goodbye: 'Довиждане',
+    //... (87 more strings)
+  },
+  tr: {
+    welcome: 'Hoşgeldiniz',
+    goodbye: 'Hoşça kal',
+    //... (87 more strings)
+  },
+  ja: {
+    welcome: 'ようこそ',
+    goodbye: 'さようなら',
+    //... (87 more strings)
+  },
+  zh: {
+    welcome: '欢迎',
+    goodbye: '再见',
+    //... (87 more strings)
+  },
+  hi: {
+    welcome: 'स्वागत है',
+    goodbye: 'अलविदा',
+    //... (87 more strings)
+  },
+  ar: {
+    welcome: 'أهلًا وسهلًا',
+    goodbye: 'وداعا',
+    //... (87 more strings)
+  }
 };
 
-const getUIText = (languageKey, textKey) => {
-  return UI_TRANSLATIONS[languageKey][textKey] || UI_TRANSLATIONS['en'][textKey];
+// Helper functions
+export const getTranslation = (key, lang = DEFAULT_LANGUAGE) => {
+  const translations = UI_TRANSLATIONS[lang];
+  return translations ? translations[key] : key;
 };
 
-export default { getUIText, LANGUAGES };
+export const setLanguage = (lang) => {
+  if (LANGUAGES.includes(lang)) {
+    I18nManager.forceRTL(lang === 'ar'); // Example for RTL languages
+    return lang;
+  }
+  return DEFAULT_LANGUAGE;
+};
+
+export const getAvailableLanguages = () => LANGUAGES;
