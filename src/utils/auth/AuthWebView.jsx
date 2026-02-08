@@ -70,10 +70,22 @@ export const AuthWebView = ({ mode, proxyURL, baseURL }) => {
         ]);
         console.log("🗑️ Local data cleared after migration");
 
-        // CRITICAL: Invalidate queries to force refetch from server
-        queryClient.invalidateQueries({ queryKey: ["portfolio"] });
-        queryClient.invalidateQueries({ queryKey: ["points"] });
-        queryClient.invalidateQueries({ queryKey: ["userPoints"] });
+       // Invalidate all portfolio queries (including user-specific ones)
+await queryClient.invalidateQueries({ 
+  queryKey: ["portfolio"],
+  refetchType: "all" 
+});
+await queryClient.invalidateQueries({ 
+  queryKey: ["points"],
+  refetchType: "all"  
+});
+await queryClient.invalidateQueries({ 
+  queryKey: ["userPoints"],
+  refetchType: "all" 
+});
+
+// Force immediate refetch to ensure fresh data
+await queryClient.refetchQueries({ queryKey: ["portfolio"] });
         console.log("♻️ Queries invalidated - portfolio will refetch from server");
       } else {
         console.log("ℹ️ No local data to migrate");
